@@ -11,13 +11,13 @@
             "type": "java",
             "name": "Battleships Client - localHost",
             "request": "launch",
-            "mainClass": "game.clientSideMain",
+            "mainClass": "game.clientSideMain"
         },
         {
             "type": "java",
             "name": "Battleships Server - localHost",
             "request": "launch",
-            "mainClass": "server.serverMain",
+            "mainClass": "server.serverMain"
         }
     ],"compounds": [
         {
