@@ -7,13 +7,9 @@ import com.formdev.flatlaf.intellijthemes.*;
 public class clientSideMain {
     public static void main(String[] args) {
 
+        FlatLightFlatIJTheme.install();
 
-        try {
-            UIManager.setLookAndFeel( new FlatCobalt2IJTheme() );
-        } catch( Exception ex ) {
-            System.err.println( "Failed to initialize LaF" );
-        }
-
+        ThemeDialog.showPopUpGuiForTheme(); 
         Controller controller = new Controller(10);
     }
 }

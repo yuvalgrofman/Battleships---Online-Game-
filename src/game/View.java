@@ -1,9 +1,6 @@
 package game;
 
 import javax.swing.*;
-
-import jdk.tools.jlink.internal.JmodArchive;
-
 import java.awt.*;
 
 public class View {
