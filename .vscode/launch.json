@@ -1,0 +1,28 @@
+{  
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Battleships Client - localHost",
+            "request": "launch",
+            "mainClass": "game.clientSideMain",
+        },
+        {
+            "type": "java",
+            "name": "Battleships Server - localHost",
+            "request": "launch",
+            "mainClass": "server.serverMain",
+        }
+    ],"compounds": [
+        {
+            "name": "Battleships game - localHost",
+            "configurations": ["Battleships Server - localHost", "Battleships Client - localHost", "Battleships Client - localHost"]
+        }
+    ]
+}
