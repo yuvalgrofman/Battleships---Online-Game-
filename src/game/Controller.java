@@ -8,8 +8,11 @@ import java.util.Random;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -74,13 +77,22 @@ public class Controller {
 
         View.addActionListenerButtons(view.getMyButtons(), new myBoardButtonClickListener());
         View.addActionListenerButtons(view.getEnemyButtons(), new enemyBoardButtonClickListener());
-        View.addActionListenerSongMenuItems(view.getSongMenuItems(),new songButtonsClickListener());
+        View.addActionListenerSongMenuItems(view.getSongMenuItems(), new songButtonsClickListener());
 
         view.getPauseButton().addActionListener(new songButtonsClickListener());
         view.getFinishSetup().addActionListener(new myBoardButtonClickListener());
         view.getRandomizeGrid().addActionListener(new myBoardButtonClickListener());
         view.getYesButton().addActionListener(new myBoardButtonClickListener());
         view.getNoButton().addActionListener(new myBoardButtonClickListener());
+
+        view.getVolumeSlider().addChangeListener(new ChangeListener(){
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                setVolume((float)(view.getVolumeSlider().getValue())/100);
+            }
+            
+        });
     }
 
     public void setUpMyShipsLocation() {
@@ -237,7 +249,7 @@ public class Controller {
 
     public void playSong(int songNumber) {
 
-        if (curPlaying != null)    
+        if (curPlaying != null)
             curPlaying.stop();
 
         String selectedSong;
@@ -246,12 +258,13 @@ public class Controller {
             selectedSong = beautifulDreamPath;
         else if (songNumber == 1)
             selectedSong = drivingAmbitionPath;
-        else 
+        else
             selectedSong = justChillPath;
 
         try {
-            
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(selectedSong).getAbsoluteFile());
+
+            AudioInputStream audioInputStream = AudioSystem
+                    .getAudioInputStream(new File(selectedSong).getAbsoluteFile());
             curPlaying = AudioSystem.getClip();
             curPlaying.open(audioInputStream);
             curPlaying.start();
@@ -264,6 +277,18 @@ public class Controller {
 
     private void connectToServer() {
         clientSideConnection = new ClientSideConnection();
+    }
+
+    public float getVolume() {
+        FloatControl gainControl = (FloatControl) curPlaying.getControl(FloatControl.Type.MASTER_GAIN);
+        return (float) Math.pow(10f, gainControl.getValue() / 20f);
+    }
+
+    public void setVolume(float volume) {
+        if (volume < 0f || volume > 2f)
+            throw new IllegalArgumentException("Volume not valid: " + volume);
+        FloatControl gainControl = (FloatControl) curPlaying.getControl(FloatControl.Type.MASTER_GAIN);
+        gainControl.setValue(20f * (float) Math.log10(volume));
     }
 
     private void enemyClickedOnMyBoard(int[] clickCoords) {
@@ -316,6 +341,7 @@ public class Controller {
                 if (menuItems[i] == e.getSource()) {
                     playSong(i);
                     view.getPauseButton().setEnabled(true);
+                    view.getVolumeSlider().setEnabled(true);
                 }
             } 
         }

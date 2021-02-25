@@ -1,6 +1,9 @@
 package game;
 
 import javax.swing.*;
+
+import jdk.nashorn.internal.scripts.JS;
+
 import java.awt.*;
 
 public class View {
@@ -40,6 +43,7 @@ public class View {
     private JMenuItem songOne = new JMenuItem("Driving Ambition");  
     private JMenuItem songTwo = new JMenuItem("Just Chill");  
     private JCheckBoxMenuItem pauseButton = new JCheckBoxMenuItem("pause");
+    private JSlider volumeSlider = new JSlider(0,200);
 
     private JButton yesButton = new JButton();
     private JButton noButton = new JButton();
@@ -122,16 +126,20 @@ public class View {
         tabSideButtons.setLayout(new BoxLayout(tabSideButtons, BoxLayout.PAGE_AXIS));
 
         //setting up the song menu in the sideButtonPanel
+        volumeSlider.setToolTipText("Volume Slider");
+
         songs.add(songZero);
         songs.add(songOne);
         songs.add(songTwo);
 
         musicMenu.add(songs);
         musicMenu.add(pauseButton);
+        musicMenu.add(volumeSlider);
 
         musicMenuBar.add(musicMenu);
 
         pauseButton.setEnabled(false);
+        volumeSlider.setEnabled(false);
 
         for (int i = 0; i < rowAndCols; i++) {
             for (int j = 0; j < rowAndCols; j++) {
@@ -386,4 +394,9 @@ public class View {
         messagePlayerLabel.setFont(font);
         messagePlayerLabel.setVisible(true);
     }
+
+    public JSlider getVolumeSlider() {
+        return this.volumeSlider;
+    }
+
 }
