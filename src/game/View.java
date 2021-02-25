@@ -1,9 +1,6 @@
 package game;
 
 import javax.swing.*;
-
-import jdk.nashorn.internal.scripts.JS;
-
 import java.awt.*;
 
 public class View {
@@ -13,9 +10,9 @@ public class View {
     private ImageIcon oceanIcon = new ImageIcon("Resources/images/ocean.png");
     private ImageIcon hitShipIcon = new ImageIcon("Resources/images/hitShip.png");
     private ImageIcon hitOceanIcon = new ImageIcon("Resources/images/hitOcean.png");
+    private ImageIcon frameIcon = new ImageIcon("Resources/images/frameIcon.png");
 
     private JFrame frame = new JFrame();
-
 
     private JPanel titlePanel = new JPanel();
     private JTabbedPane buttons = new JTabbedPane();
@@ -74,6 +71,7 @@ public class View {
         frame.setLayout(new BorderLayout());
         frame.setSize(1000, 1000);
         frame.setResizable(true);
+        frame.setIconImage(frameIcon.getImage());
         frame.setVisible(true);
 
         // setting the title text
