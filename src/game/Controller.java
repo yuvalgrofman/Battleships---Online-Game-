@@ -62,8 +62,6 @@ public class Controller {
     private int myWins = 0;
     private int enemyWins = 0;
 
-    private boolean firstGame = true;
-
     public Controller(int rowsAndCols) {
         if (rowsAndCols < 6) {
             System.out.println("parameter rowsAndCols must be equal or greater than 6");
@@ -490,7 +488,6 @@ public class Controller {
                                 clientSideConnection.sendCoords(j, i);
 
                                 if (clientSideConnection.sendDidIWin()) {
-                                    firstGame = false;
                                     myWins++;
                                     view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
                                     view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Good Job!!! You Won!");;
@@ -506,7 +503,6 @@ public class Controller {
                                     enemyClickedOnMyBoard(enemyClickedLocation);
 
                                     if (didEnemyWin()) {
-                                        firstGame = false;
                                         enemyWins++;
                                         view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
                                         view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Nice Try, Maybe next time...");;
