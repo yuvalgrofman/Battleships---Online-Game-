@@ -1,6 +1,6 @@
 package game;
 
-import com.formdev.flatlaf.intellijthemes.*;
+import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
 
 public class clientSideMain {
     public static void main(String[] args) {

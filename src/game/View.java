@@ -6,11 +6,11 @@ import java.awt.*;
 public class View {
 
     //creating the image icons for the view class 
-    private ImageIcon shipIcon = new ImageIcon("Resources/images/ship.png");
-    private ImageIcon oceanIcon = new ImageIcon("Resources/images/ocean.png");
-    private ImageIcon hitShipIcon = new ImageIcon("Resources/images/hitShip.png");
-    private ImageIcon hitOceanIcon = new ImageIcon("Resources/images/hitOcean.png");
-    private ImageIcon battleshipsIcon = new ImageIcon("Resources/images/frameIcon.png");
+    private ImageIcon shipIcon = new ImageIcon("src/game/Resources/images/ship.png");
+    private ImageIcon oceanIcon = new ImageIcon("src/game/Resources/images/ocean.png");
+    private ImageIcon hitShipIcon = new ImageIcon("src/game/Resources/images/hitShip.png");
+    private ImageIcon hitOceanIcon = new ImageIcon("src/game/Resources/images/hitOcean.png");
+    private ImageIcon battleshipsIcon = new ImageIcon("src/game/Resources/images/frameIcon.png");
 
     private JFrame frame = new JFrame();
 

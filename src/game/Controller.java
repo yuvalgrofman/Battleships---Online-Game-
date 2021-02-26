@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.Random;
-
+import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -28,9 +28,9 @@ public class Controller {
 
     private Clip curPlaying;
 
-    private String beautifulDreamPath = "Resources/music/beautiful-dream.wav";
-    private String drivingAmbitionPath = "Resources/music/driving-ambition.wav";
-    private String justChillPath = "Resources/music/just-chill.wav";
+    private URL beautifulDreamURL = this.getClass().getResource("resources/music/beautiful-dream.wav");
+    private URL drivingAmbitionURL = this.getClass().getResource("resources/music/driving-ambition.wav");
+    private URL justChillURL = this.getClass().getResource("resources/music/just-chill.wav");
 
     /*
      * 1 - ship, -1 - hit ship 0 - ocean -2 - hit ocean
@@ -256,19 +256,18 @@ public class Controller {
         if (curPlaying != null)
             curPlaying.stop();
 
-        String selectedSong;
+        URL selectedSong;
 
         if (songNumber == 0)
-            selectedSong = beautifulDreamPath;
+            selectedSong = beautifulDreamURL;
         else if (songNumber == 1)
-            selectedSong = drivingAmbitionPath;
+            selectedSong = drivingAmbitionURL;
         else
-            selectedSong = justChillPath;
+            selectedSong = justChillURL;
 
         try {
 
-            AudioInputStream audioInputStream = AudioSystem
-                    .getAudioInputStream(new File(selectedSong).getAbsoluteFile());
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(selectedSong);
             curPlaying = AudioSystem.getClip();
             curPlaying.open(audioInputStream);
             curPlaying.start();
