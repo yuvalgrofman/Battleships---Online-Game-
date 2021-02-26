@@ -155,8 +155,11 @@ public class Server {
                         write2DArray(playerOneBoard);
                     }
 
+                    isPlayerOneTurn = true;
                     playerOnePlayingValid = false;
                     playerTwoPlayingValid = false;
+                    player1CoordsValid = false;                    
+                    player2CoordsValid = false;                    
 
                     dataOutputStream.flush();
 

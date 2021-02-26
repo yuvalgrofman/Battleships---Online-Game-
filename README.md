@@ -1,7 +1,23 @@
 # Battleships - Online Game   
 
 ## Rules of the game 
-Each ship must be placed horizontally or vertically across grid spaces—not diagonally—and the ships can't hang off the grid. Ships can touch each other, but they can't occupy the same grid space. You cannot change the position of the ships after the game begins
+
+### Game Objective
+The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.  You try and hit them by calling out the coordinates of one of the squares on the board.  The other player also tries to hit your ships by calling out coordinates.  Neither you nor the other player can see the other's board so you must try to guess where they are.  Each board in the physical game has two grids:  the lower (horizontal) section for the player's ships and the upper part (vertical during play) for recording the player's guesses.
+
+### Starting a New Game
+Each player places the 10 ships somewhere on their board.  The ships can only be placed vertically or horizontally. Diagonal placement is not allowed. No part of a ship may hang off the edge of the board.  Ships may not overlap each other.  No ships may be placed on another ship. 
+
+Once the guessing begins, the players may not move the ships.
+
+The 5 ships are: One Battleship (Occupies 4 spaces),Two Cruisers (3), Three Submarines (2), and Four Destroyers (1).  
+
+### Playing the Game
+Player's take turns guessing by calling out the coordinates. The opponent responds with "hit" or "miss" as appropriate.  Both players should mark their board with pegs:  red for hit, white for miss. For example, if you call out F6 and your opponent does not have any ship located at F6, your opponent would respond with "miss".  You record the miss F6 by placing a white peg on the lower part of your board at F6.  Your opponent records the miss by placing.
+
+When all of the squares that one your ships occupies have been hit, the ship will be sunk.   You should announce "hit and sunk".  In the physical game, a red peg is placed on the top edge of the vertical board to indicate a sunk ship. 
+
+As soon as all of one player's ships have been sunk, the game ends.
 
 ## About Me
 In my junior year of college, I enrolled in a creative nonfiction workshop without fully understanding even what the title of the course meant. Back then, I fiercely identified as a fiction writer, and had already completed a draft of a novel. When I wanted to write about real-life people, I disguised them as fictional characters with a couple of borrowed personality traits or lines of dialogue. 

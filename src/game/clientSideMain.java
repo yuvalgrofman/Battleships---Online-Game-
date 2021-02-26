@@ -1,7 +1,5 @@
 package game;
 
-import javax.swing.UIManager;
-import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.intellijthemes.*;
 
 public class clientSideMain {

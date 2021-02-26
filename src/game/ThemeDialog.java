@@ -1,6 +1,5 @@
 package game;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -8,6 +7,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.FlatCobalt2IJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatGruvboxDarkMediumIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatHighContrastIJTheme;
 
 
 public class ThemeDialog {
@@ -23,8 +23,10 @@ public class ThemeDialog {
         null, 
         pizzas, 
         pizzas[0]);
+        if (themePicked == null) {
+            FlatHighContrastIJTheme.install();
 
-        if (themePicked.equals("Flat Light")) {
+        }else if (themePicked.equals("Flat Light")) {
             
             FlatLightLaf.install();
         }else if (themePicked.equals("Flat Dark")){
