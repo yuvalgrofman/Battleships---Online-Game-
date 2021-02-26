@@ -10,7 +10,7 @@ public class View {
     private ImageIcon oceanIcon = new ImageIcon("Resources/images/ocean.png");
     private ImageIcon hitShipIcon = new ImageIcon("Resources/images/hitShip.png");
     private ImageIcon hitOceanIcon = new ImageIcon("Resources/images/hitOcean.png");
-    private ImageIcon frameIcon = new ImageIcon("Resources/images/frameIcon.png");
+    private ImageIcon battleshipsIcon = new ImageIcon("Resources/images/frameIcon.png");
 
     private JFrame frame = new JFrame();
 
@@ -71,7 +71,7 @@ public class View {
         frame.setLayout(new BorderLayout());
         frame.setSize(1000, 1000);
         frame.setResizable(true);
-        frame.setIconImage(frameIcon.getImage());
+        frame.setIconImage(battleshipsIcon.getImage());
         frame.setVisible(true);
 
         // setting the title text
@@ -173,7 +173,8 @@ public class View {
         messagePlayerLabel.setMinimumSize(new Dimension(0, 0));
         messagePlayerLabel.setPreferredSize(new Dimension(0,0));
         messagePlayerLabel.setMaximumSize(new Dimension(1000, (int) frame.getSize().getHeight() / 15));
-
+        messagePlayerLabel.setEditable(false);
+        messagePlayerLabel.setHighlighter(null);
 
         musicMenuBar.setMinimumSize(new Dimension(0, (int) frame.getSize().getHeight() / 10));
         musicMenuBar.setPreferredSize(new Dimension((int) (frame.getSize().getWidth() / 5), (int) frame.getSize().getHeight() / 13));
@@ -188,8 +189,7 @@ public class View {
         statusPanel.add(playerIdLabel);
         statusPanel.add(scoreLabel);
         statusPanel.add(messagePlayerLabel);
-        statusPanel.add(endGamePanel);
-
+        statusPanel.add(endGamePanel); 
         endGamePanel.setVisible(false);
         messagePlayerLabel.setVisible(false);
 
@@ -395,6 +395,30 @@ public class View {
 
     public JSlider getVolumeSlider() {
         return this.volumeSlider;
+    }
+
+    public void closeGui() {
+        JOptionPane.showMessageDialog(null,
+        "Goodbye and thanks for playing!", 
+        "Goodbye",
+        JOptionPane.PLAIN_MESSAGE);
+
+        System.exit(0);
+    }
+
+    public void youWonPane(int myWins, int enemyWins){
+        JOptionPane.showMessageDialog(null,
+        "Good Job You Won \n The Score is now: \n" + "You : " + myWins + " ,Enemy : " + enemyWins, 
+        "Victory",
+        JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
+    public void youLostPane(int myWins, int enemyWins){
+        JOptionPane.showMessageDialog(null,
+        "Nice try... Maybe next time \n The Score is now: \n" + "You : " + myWins + " ,Enemy : " + enemyWins, 
+        "Defeat",
+        JOptionPane.INFORMATION_MESSAGE);
     }
 
 }

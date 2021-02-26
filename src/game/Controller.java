@@ -62,6 +62,8 @@ public class Controller {
     private int myWins = 0;
     private int enemyWins = 0;
 
+    private boolean firstGame = true;
+
     public Controller(int rowsAndCols) {
         if (rowsAndCols < 6) {
             System.out.println("parameter rowsAndCols must be equal or greater than 6");
@@ -245,6 +247,10 @@ public class Controller {
         }
 
         return true;
+    }
+
+    public void closeClient() {
+        view.closeGui();
     }
 
     public void playSong(int songNumber) {
@@ -441,13 +447,7 @@ public class Controller {
 
                     view.sendPlayerMessage(new Font("Arial", Font.BOLD, 13), "Thanks For Playing");
 
-                    try {
-                        Thread.sleep(400);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-
-                    System.exit(0);
+                    closeClient();
                 }
 
             } else if (gameFinished && e.getSource() == view.getNoButton()) {
@@ -464,13 +464,7 @@ public class Controller {
                     System.out.println(ex.getStackTrace());
                 }
 
-                try {
-                    Thread.sleep(400);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-
-                System.exit(0);
+                closeClient();
             }
 
         }
@@ -496,10 +490,12 @@ public class Controller {
                                 clientSideConnection.sendCoords(j, i);
 
                                 if (clientSideConnection.sendDidIWin()) {
+                                    firstGame = false;
                                     myWins++;
                                     view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
-                                    view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"You Won");;
+                                    view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Good Job!!! You Won!");;
                                     view.getEndGamePanel().setVisible(true);;
+                                    view.youWonPane(myWins, enemyWins);
 
                                     gameFinished = true;
                                 } else {
@@ -510,10 +506,12 @@ public class Controller {
                                     enemyClickedOnMyBoard(enemyClickedLocation);
 
                                     if (didEnemyWin()) {
+                                        firstGame = false;
                                         enemyWins++;
                                         view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
-                                        view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"You Lost");;
+                                        view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Nice Try, Maybe next time...");;
                                         view.getEndGamePanel().setVisible(true);
+                                        view.youLostPane(myWins, enemyWins);
 
                                         gameFinished = true;
                                     }
