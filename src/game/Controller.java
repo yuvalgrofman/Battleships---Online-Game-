@@ -28,9 +28,9 @@ public class Controller {
 
     private Clip curPlaying;
 
-    private URL beautifulDreamURL = this.getClass().getResource("resources/music/beautiful-dream.wav");
-    private URL drivingAmbitionURL = this.getClass().getResource("resources/music/driving-ambition.wav");
-    private URL justChillURL = this.getClass().getResource("resources/music/just-chill.wav");
+    private URL beautifulDreamURL = this.getClass().getResource("/resources/music/beautiful-dream.wav");
+    private URL drivingAmbitionURL = this.getClass().getResource("/resources/music/driving-ambition.wav");
+    private URL justChillURL = this.getClass().getResource("/resources/music/just-chill.wav");
 
     /*
      * 1 - ship, -1 - hit ship 0 - ocean -2 - hit ocean
