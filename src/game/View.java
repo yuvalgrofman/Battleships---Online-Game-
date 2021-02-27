@@ -1,16 +1,27 @@
 package game;
 
+import javax.imageio.ImageIO;
+import javax.print.DocFlavor.INPUT_STREAM;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class View {
 
-    //creating the image icons for the view class 
-    private ImageIcon shipIcon = new ImageIcon("src/Resources/images/ship.png");
-    private ImageIcon oceanIcon = new ImageIcon("src/Resources/images/ocean.png");
-    private ImageIcon hitShipIcon = new ImageIcon("src/Resources/images/hitShip.png");
-    private ImageIcon hitOceanIcon = new ImageIcon("src/Resources/images/hitOcean.png");
-    private ImageIcon battleshipsIcon = new ImageIcon("src/Resources/images/frameIcon.png");
+    // creating the image icons for the view class
+    private InputStream shipStream = this.getClass().getResourceAsStream("/resources/images/ship.png");
+    private InputStream oceanStream = this.getClass().getResourceAsStream("/resources/images/ocean.png");
+    private InputStream hitShipStream = this.getClass().getResourceAsStream("/resources/images/hitShip.png");
+    private InputStream hitOceanStream = this.getClass().getResourceAsStream("/resources/images/hitOcean.png");
+    private InputStream battleshipsStream = this.getClass().getResourceAsStream("/resources/images/frameIcon.png");
+
+    private ImageIcon shipIcon;
+    private ImageIcon oceanIcon;
+    private ImageIcon hitShipIcon;
+    private ImageIcon hitOceanIcon;
+    private ImageIcon battleshipsIcon;
 
     private JFrame frame = new JFrame();
 
@@ -36,11 +47,11 @@ public class View {
 
     private JMenu musicMenu = new JMenu("music menu");
     private JMenu songs = new JMenu("songs");
-    private JMenuItem songZero = new JMenuItem("Beautiful Dream");  
-    private JMenuItem songOne = new JMenuItem("Driving Ambition");  
-    private JMenuItem songTwo = new JMenuItem("Just Chill");  
+    private JMenuItem songZero = new JMenuItem("Beautiful Dream");
+    private JMenuItem songOne = new JMenuItem("Driving Ambition");
+    private JMenuItem songTwo = new JMenuItem("Just Chill");
     private JCheckBoxMenuItem pauseButton = new JCheckBoxMenuItem("pause");
-    private JSlider volumeSlider = new JSlider(0,200);
+    private JSlider volumeSlider = new JSlider(0, 200);
 
     private JButton yesButton = new JButton();
     private JButton noButton = new JButton();
@@ -58,6 +69,17 @@ public class View {
     private int playerId;
 
     public View(int rowAndCols, int[][] myShipsLocation, int playerId) {
+
+        try {
+            shipIcon = new ImageIcon(ImageIO.read(shipStream));
+            oceanIcon = new ImageIcon(ImageIO.read(oceanStream));
+            hitShipIcon = new ImageIcon(ImageIO.read(hitShipStream));
+            hitOceanIcon = new ImageIcon(ImageIO.read(hitOceanStream));
+            battleshipsIcon = new ImageIcon(ImageIO.read(battleshipsStream));
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeGui();
+        }
 
         this.playerId = playerId;
         this.myShipsLocation = myShipsLocation;
