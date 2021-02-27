@@ -1,12 +1,10 @@
 package game;
 
 import javax.imageio.ImageIO;
-import javax.print.DocFlavor.INPUT_STREAM;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class View {
 
