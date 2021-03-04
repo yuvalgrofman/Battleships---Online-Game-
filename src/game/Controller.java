@@ -31,6 +31,7 @@ public class Controller {
     private URL beautifulDreamURL = this.getClass().getResource("/resources/music/beautiful-dream.wav");
     private URL drivingAmbitionURL = this.getClass().getResource("/resources/music/driving-ambition.wav");
     private URL justChillURL = this.getClass().getResource("/resources/music/just-chill.wav");
+    private URL buttonSoundURL = this.getClass().getResource("/resources/Sound Effects/clickMusic.wav");
 
     /*
      * 1 - ship, -1 - hit ship 0 - ocean -2 - hit ocean
@@ -294,6 +295,19 @@ public class Controller {
         gainControl.setValue(20f * (float) Math.log10(volume));
     }
 
+    public void makeButtonSound() {
+        try {
+
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(buttonSoundURL);
+            curPlaying = AudioSystem.getClip();
+            curPlaying.open(audioInputStream);
+            curPlaying.start();
+        } catch (Exception ex) {
+            System.out.println("Error with playing sound.");
+            ex.printStackTrace();
+        }
+    }
+
     private void enemyClickedOnMyBoard(int[] clickCoords) {
         int x = clickCoords[0];
         int y = clickCoords[1];
@@ -331,6 +345,8 @@ public class Controller {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            makeButtonSound();
+
             JMenuItem[] menuItems = view.getSongMenuItems();
             if (view.getPauseButton() == e.getSource()) {
                 if (((JCheckBoxMenuItem) e.getSource()).getState()) {
@@ -355,6 +371,7 @@ public class Controller {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            makeButtonSound();
 
             if (e.getSource() == view.getFinishSetup()) {
                 setupFinished = true;
@@ -471,6 +488,8 @@ public class Controller {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            makeButtonSound();
+
             if (setupFinished && yourTurn && !gameFinished) {
                 for (int i = 0; i < rowsAndCols; i++) {
                     for (int j = 0; j < rowsAndCols; j++) {
