@@ -346,6 +346,7 @@ public class Controller {
                     playSong(i);
                     view.getPauseButton().setEnabled(true);
                     view.getVolumeSlider().setEnabled(true);
+                    view.getPauseButton().setState(false);
                 }
             } 
         }
