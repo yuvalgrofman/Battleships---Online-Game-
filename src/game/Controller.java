@@ -19,15 +19,24 @@ import java.awt.event.ActionEvent;
 
 public class Controller {
 
+    
     private boolean setupFinished = false;
     private boolean gameFinished = false;
     private int rowsAndCols = 6;
-    private View view;
-    private ClientSideConnection clientSideConnection;
+    private int portNumber; 
     private int playerId;
+    
+    
+    private View view;//the view is the gui 
+    private ClientSideConnection clientSideConnection;//the CSC is the connection to the sever
 
-    private Clip curPlaying;
+    //the clips are used to make noise 
+    //MusicClip is in charge of music 
+    //and soundEffectsClip is incharge of different sound effects
+    private Clip musicClip;
+    private Clip soundEffectsClip;
 
+    //URL which hold the music files data
     private URL beautifulDreamURL = this.getClass().getResource("/resources/music/beautiful-dream.wav");
     private URL drivingAmbitionURL = this.getClass().getResource("/resources/music/driving-ambition.wav");
     private URL justChillURL = this.getClass().getResource("/resources/music/just-chill.wav");
@@ -39,6 +48,7 @@ public class Controller {
     private int[][] myShipsLocation;
     private int[][] enemyShipsLocation;
 
+    //setting up the initial position of each ship
     private int[][] ship1 = { { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 } };
     private int[][] ship3 = { { 0, 1 }, { 1, 1 }, { 2, 1 } };
     private int[][] ship2 = { { 0, 2 }, { 1, 2 }, { 2, 2 } };
@@ -50,6 +60,7 @@ public class Controller {
     private int[][] ship9 = { { 0, 5 } };
     private int[][] ship10 = { { 2, 5 } };
 
+    //setting up an array which holds all of the ships
     private int[][][] ships = { ship1, ship2, ship3, ship4, ship5, ship6, ship7, ship8, ship9, ship10 };
 
     private int lastButtonPressX;
@@ -57,25 +68,38 @@ public class Controller {
     private boolean buttonPressed = false;
     private int[][] lastShipPressed;
     private boolean yourTurn;
+    private boolean randomizeSetupTriggered = false;
 
     int[] enemyClickedLocation;
 
     private int myWins = 0;
     private int enemyWins = 0;
 
-    public Controller(int rowsAndCols) {
+    /**
+     * Constructor 
+     * @param rowsAndCols represents the amount rows and cols each player should have 
+     * @param portNumber the port number which will be used for the connection to the server 
+     */
+    public Controller(int rowsAndCols, int portNumber) {
+        //checks that rows and cols is greater than 6
         if (rowsAndCols < 6) {
             System.out.println("parameter rowsAndCols must be equal or greater than 6");
             throw new IllegalArgumentException();
         }
 
+        this.portNumber = portNumber;        
         this.rowsAndCols = rowsAndCols;
 
+        //setting up ships location 
         setUpMyShipsLocation();
 
+        //connecting to server
         connectToServer();
+
+        //creating the view with all the necessary parameters
         this.view = new View(rowsAndCols, myShipsLocation, playerId);
 
+        //adding the appropriate ActionListener to each button  
         View.addActionListenerButtons(view.getMyButtons(), new myBoardButtonClickListener());
         View.addActionListenerButtons(view.getEnemyButtons(), new enemyBoardButtonClickListener());
         View.addActionListenerSongMenuItems(view.getSongMenuItems(), new songButtonsClickListener());
@@ -86,6 +110,7 @@ public class Controller {
         view.getYesButton().addActionListener(new myBoardButtonClickListener());
         view.getNoButton().addActionListener(new myBoardButtonClickListener());
 
+        //adding a changeListener to the volume slider
         view.getVolumeSlider().addChangeListener(new ChangeListener(){
 
             @Override
@@ -96,6 +121,9 @@ public class Controller {
         });
     }
 
+    /**
+     * setting up the ships in players board 
+     */
     public void setUpMyShipsLocation() {
 
         this.myShipsLocation = new int[rowsAndCols][rowsAndCols];
@@ -142,6 +170,10 @@ public class Controller {
         myShipsLocation[2][5] = 1;
     }
 
+    /**
+     * creates a 2d array that represents the enemy board and sets one point to 1 so that the program does not believe that the player won 
+     * it has no impact on the logic of the code because later this 2d array will be changed 
+     */
     public void setUpEnemyShipsLocation() {
         enemyShipsLocation = new int[rowsAndCols][rowsAndCols];
         enemyShipsLocation[0][0] = 1;// assigning a value to an arbitrary point on the board
@@ -149,6 +181,9 @@ public class Controller {
 
     }
 
+    /**
+     * @return true if the setup phase ended
+     */
     public boolean isSetupFinished() {
         return this.setupFinished;
     }
@@ -161,10 +196,6 @@ public class Controller {
         return this.rowsAndCols;
     }
 
-    public View getView() {
-        return this.view;
-    }
-
     public int[][] getMyShipsLocation() {
         return this.myShipsLocation;
     }
@@ -173,6 +204,13 @@ public class Controller {
         this.myShipsLocation = myShipsLocation;
     }
 
+    /**
+     * 
+     * @param x the x coordinate of a certain point
+     * @param y the y coordinate of a certain point 
+     * @return the ship/array which the point is on if the point is on a ship
+     * otherwise returns null         
+     */
     public int[][] isOnShip(int x, int y) {
 
         for (int i = 0; i < ships.length; i++) {
@@ -186,6 +224,17 @@ public class Controller {
         return null;
     }
 
+    /**
+     * 
+     * @param ship the ship which is to be moved 
+     * @param originalX a x coordinate of a point on the ship
+     * @param originalY a y coordinate of the same point on the ship
+     * @param newX a x coordinate of a point on the grid 
+     * @param newY a y coordinate of the same point on the grid 
+     * @return if the ship has successfully been moved 
+     * moves a ship from one place to another such that the direction and orientation of the ship are preserved 
+     * and such that the point on the ship (originalX, originalY) -> (newX, newY) 
+     */
     public boolean moveShip(int[][] ship, int originalX, int originalY, int newX, int newY) {
 
         int xDiff = newX - originalX;
@@ -220,6 +269,10 @@ public class Controller {
         return true;
     }
 
+    /**
+     * checks if the user won 
+     * @return true if the user won (the opponents board has no ships remaining)
+     */
     public boolean didIWin() {
 
         for (int y = 0; y < enemyShipsLocation.length; y++) {
@@ -234,6 +287,10 @@ public class Controller {
         return true;
     }
 
+    /**
+     * checks if the opponent has won 
+     * @return true if the opponent won (The player's board has no ships remaining)
+     */
     public boolean didEnemyWin() {
 
         for (int i = 0; i < myShipsLocation.length; i++) {
@@ -248,66 +305,12 @@ public class Controller {
         return true;
     }
 
-    public void closeClient() {
-        view.closeGui();
-    }
-
-    public void playSong(int songNumber) {
-
-        if (curPlaying != null)
-            curPlaying.stop();
-
-        URL selectedSong;
-
-        if (songNumber == 0)
-            selectedSong = beautifulDreamURL;
-        else if (songNumber == 1)
-            selectedSong = drivingAmbitionURL;
-        else
-            selectedSong = justChillURL;
-
-        try {
-
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(selectedSong);
-            curPlaying = AudioSystem.getClip();
-            curPlaying.open(audioInputStream);
-            curPlaying.start();
-            curPlaying.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception ex) {
-            System.out.println("Error with playing sound.");
-            ex.printStackTrace();
-        }
-    }
-
-    private void connectToServer() {
-        clientSideConnection = new ClientSideConnection();
-    }
-
-    public float getVolume() {
-        FloatControl gainControl = (FloatControl) curPlaying.getControl(FloatControl.Type.MASTER_GAIN);
-        return (float) Math.pow(10f, gainControl.getValue() / 20f);
-    }
-
-    public void setVolume(float volume) {
-        if (volume < 0f || volume > 2f)
-            throw new IllegalArgumentException("Volume not valid: " + volume);
-        FloatControl gainControl = (FloatControl) curPlaying.getControl(FloatControl.Type.MASTER_GAIN);
-        gainControl.setValue(20f * (float) Math.log10(volume));
-    }
-
-    public void makeButtonSound() {
-        try {
-
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(buttonSoundURL);
-            curPlaying = AudioSystem.getClip();
-            curPlaying.open(audioInputStream);
-            curPlaying.start();
-        } catch (Exception ex) {
-            System.out.println("Error with playing sound.");
-            ex.printStackTrace();
-        }
-    }
-
+    /**
+     * 
+     * @param clickCoords an array with two integer elements which represent where the opponent clicked 
+     * changes the value of point is myShipsLocation according to if the opponent hit a ship or not
+     * the refreshes the player's board part of the gui  
+     */
     private void enemyClickedOnMyBoard(int[] clickCoords) {
         int x = clickCoords[0];
         int y = clickCoords[1];
@@ -325,6 +328,12 @@ public class Controller {
         view.refreshMyBoard(myShipsLocation);
     }
 
+    /**
+     * 
+     * @param clickCoords an array with two integer elements which represent where the player clicked 
+     * changes the value of point is enemyShipsLocation according to if the player hit a ship or not
+     * the refreshes the opponent's board part of the gui  
+     */
     public void IClickedOnEnemyBoard(int[] clickCoords) {
 
         int x = clickCoords[0];
@@ -341,6 +350,108 @@ public class Controller {
         view.refreshEnemyBoard(enemyShipsLocation);
     }
 
+    /**
+     * 
+     * @param songNumber receives a number which represents which song is to be played
+     * 0 - beautiful dream
+     * 1 - driving ambition 
+     * 2 - just chill
+     * plays the song according to songNumber
+     */
+    public void playSong(int songNumber) {
+
+        if (musicClip != null)
+            musicClip.stop();
+
+        URL selectedSong;
+
+        if (songNumber == 0)
+            selectedSong = beautifulDreamURL;
+        else if (songNumber == 1)
+            selectedSong = drivingAmbitionURL;
+        else
+            selectedSong = justChillURL;
+
+        try {
+
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(selectedSong);
+            musicClip = AudioSystem.getClip();
+            musicClip.open(audioInputStream);
+            musicClip.start();
+            musicClip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception ex) {
+            view.sendPlayerMessage(new Font("Arial", Font.BOLD, 13),"Error with playing sound.");
+            System.out.println("Error with playing sound.");
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * 
+     * @return a float which is equal to 10^(volume/20h)
+     */
+    public float getVolume() {
+        FloatControl gainControl = (FloatControl) musicClip.getControl(FloatControl.Type.MASTER_GAIN);
+        return (float) Math.pow(10f, gainControl.getValue() / 20f);
+    }
+
+    /**
+     * 
+     * @param volume a parameter which represents the volume of the sound
+     * throws an error if the volume is negative, zero or greater/equal to two
+     * sets the volume according to volume  
+     */
+    public void setVolume(float volume) {
+        if (volume < 0f || volume > 2f)
+            throw new IllegalArgumentException("Volume not valid: " + volume);
+        FloatControl gainControl = (FloatControl) musicClip.getControl(FloatControl.Type.MASTER_GAIN);
+        gainControl.setValue(20f * (float) Math.log10(volume));
+    }
+
+    /**
+     * using soundEffectsClip the function makes a button sound is randomizeTriggeredSetup is false 
+     * this is because randomize board triggers makeButtonSound but it shouldn't so if it does trigger it there is no sound  
+     */
+    public void makeButtonSound() {
+        if (!randomizeSetupTriggered) {
+            try {
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(buttonSoundURL);
+                soundEffectsClip = AudioSystem.getClip();
+                soundEffectsClip.open(audioInputStream);
+                soundEffectsClip.start();
+            } catch (Exception ex) {
+                System.out.println("Error with playing button noise.");
+                view.sendPlayerMessage(new Font("Arial", Font.BOLD, 13),"Error with playing button noise.");
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public View getView() {
+        return this.view;
+    }
+
+    /**
+     * calls view.closeGui()
+     */
+    public void closeClient() {
+        view.closeGui();
+    }
+
+    /**
+     * initializes ClientSideConnection which establishes a connection with the server
+     */
+    private void connectToServer() {
+        clientSideConnection = new ClientSideConnection();
+    }
+
+    /**
+     * calls view.connectionErrorPane()
+     */
+    public void connectionError() {
+        View.connectionErrorPane();
+    }
+
     class songButtonsClickListener implements ActionListener {
 
         @Override
@@ -350,15 +461,16 @@ public class Controller {
             JMenuItem[] menuItems = view.getSongMenuItems();
             if (view.getPauseButton() == e.getSource()) {
                 if (((JCheckBoxMenuItem) e.getSource()).getState()) {
-                    curPlaying.stop();
+                    musicClip.stop();
                 } else {
-                    curPlaying.start();
+                    musicClip.start();
                 }
             }
 
             for (int i = 0; i < menuItems.length; i++) {
                 if (menuItems[i] == e.getSource()) {
                     playSong(i);
+                    view.getPauseButton().setState(false);
                     view.getPauseButton().setEnabled(true);
                     view.getVolumeSlider().setEnabled(true);
                 }
@@ -394,6 +506,7 @@ public class Controller {
                 }
 
             } else if (e.getSource() == view.getRandomizeGrid()) {
+                randomizeSetupTriggered = true;
                 Random random = new Random();
 
                 for (int i = 0; i < 100; i++) {
@@ -401,6 +514,8 @@ public class Controller {
                     int y = random.nextInt(rowsAndCols);
                     view.getMyButtons()[x][y].doClick();
                 }
+
+                randomizeSetupTriggered = false;
 
             } else if (!setupFinished) {
                 for (int i = 0; i < rowsAndCols; i++) {
@@ -455,13 +570,13 @@ public class Controller {
                     System.out.println("IOException from run in SSC");
                     System.out.println(ex.getLocalizedMessage());
                     System.out.println(ex.getStackTrace());
+                    connectionError();
                 }
 
                 if (!enemyWantsToPlay) {
-
                     view.sendPlayerMessage(new Font("Arial", Font.BOLD, 13), "Thanks For Playing");
 
-                    closeClient();
+                    view.opponentDeclinedRematch();
                 }
 
             } else if (gameFinished && e.getSource() == view.getNoButton()) {
@@ -476,6 +591,7 @@ public class Controller {
                     System.out.println("IOException from run in SSC");
                     System.out.println(ex.getLocalizedMessage());
                     System.out.println(ex.getStackTrace());
+                    connectionError();
                 }
 
                 closeClient();
@@ -548,7 +664,7 @@ public class Controller {
         public ClientSideConnection() {
 
             try {
-                socket = new Socket("localHost", 00001);
+                socket = new Socket("localHost", portNumber);
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 playerId = dataInputStream.readInt();
@@ -559,6 +675,7 @@ public class Controller {
                 System.out.println("IOException from ClientSideConnection Constructor");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
         }
 
@@ -577,6 +694,7 @@ public class Controller {
                 System.out.println("IOException from write2dArray");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
         }
 
@@ -596,6 +714,7 @@ public class Controller {
                 System.out.println("IOException from read2DArray");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
 
             return array;
@@ -612,6 +731,7 @@ public class Controller {
                 System.out.println("IOException from sendCoords");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
         }
 
@@ -625,6 +745,7 @@ public class Controller {
                 System.out.println("IOException from receiveCoords");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
 
             return coords;
@@ -637,6 +758,7 @@ public class Controller {
                 System.out.println("IOException from sendDidIWin"); 
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                connectionError();
             }
 
             return didIWin();

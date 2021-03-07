@@ -7,6 +7,7 @@ public class Server {
 
     private ServerSocket serverSocket;
     private int playersConnected = 0;
+    private int portNumber;
     ServerSideConnection playerOneSSC;
     ServerSideConnection playerTwoSSC;
 
@@ -40,17 +41,24 @@ public class Server {
     private boolean playerOnePlayingValid = false;
     private boolean playerTwoPlayingValid = false;
 
-    public Server() {
+    public Server(int portNumber) {
+        this.portNumber = portNumber;
+
         System.out.println("-----Server-------");
         try {
-            serverSocket = new ServerSocket(00001);
+            serverSocket = new ServerSocket(portNumber);
         } catch (IOException ex) {
             System.out.println("IOException from Sever Constructor");
             System.out.println(ex.getLocalizedMessage());
             System.out.println(ex.getStackTrace());
+            closeServer();
         }
         acceptConnections();
 
+    }
+
+    public void closeServer() {
+        System.exit(0);
     }
 
     public void acceptConnections() {
@@ -78,6 +86,7 @@ public class Server {
         } catch (IOException ex) {
             System.out.println("IOException from acceptConnections");
             System.out.println(ex.getLocalizedMessage());
+            closeServer();
         }
     }
 
@@ -114,6 +123,7 @@ public class Server {
                 System.out.println("IOException from SSC Constructor");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             }
         }
 
@@ -273,6 +283,7 @@ public class Server {
                 System.out.println("IOException from run in SSC");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             } catch (InterruptedException ex) {
                 System.out.println("InterruptedException from run in SSC");
                 System.out.println(ex.getLocalizedMessage());
@@ -292,6 +303,7 @@ public class Server {
                 System.out.println("IOException from write2dArray");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             }
         }
 
@@ -314,6 +326,7 @@ public class Server {
                 System.out.println("IOException from read2DArray");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             }
 
             int[][] array = { { -1 } };
@@ -334,6 +347,7 @@ public class Server {
                 System.out.println("IOException from receiveCoords");
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             }
 
             return coords;
@@ -363,6 +377,7 @@ public class Server {
                 System.out.println("IOException from didYouWin"); 
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println(ex.getStackTrace());
+                closeServer();
             }
 
             return false; 
