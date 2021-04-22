@@ -1,4 +1,3 @@
-package game;
 
 //importing all of the necessary library/functions
 import javax.imageio.ImageIO;
@@ -8,13 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class View {
-
     // creating the input streams for image icons for the view class
-    private InputStream shipStream = this.getClass().getResourceAsStream("/resources/images/ship.png");
-    private InputStream oceanStream = this.getClass().getResourceAsStream("/resources/images/ocean.png");
-    private InputStream hitShipStream = this.getClass().getResourceAsStream("/resources/images/hitShip.png");
-    private InputStream hitOceanStream = this.getClass().getResourceAsStream("/resources/images/hitOcean.png");
-    private InputStream battleshipsStream = this.getClass().getResourceAsStream("/resources/images/frameIcon.png");
+    private InputStream shipStream = this.getClass().getResourceAsStream("resources/images/ship.png");
+    private InputStream oceanStream = this.getClass().getResourceAsStream("resources/images/ocean.png");
+    private InputStream hitShipStream = this.getClass().getResourceAsStream("resources/images/hitShip.png");
+    private InputStream hitOceanStream = this.getClass().getResourceAsStream("resources/images/hitOcean.png");
+    private InputStream battleshipsStream = this.getClass().getResourceAsStream("resources/images/frameIcon.png");
 
     //creating the images icons which will later use the inputStreams 
     private ImageIcon shipIcon;
@@ -47,6 +45,7 @@ public class View {
     private JLabel playerIdLabel = new JLabel();
     private JLabel scoreLabel = new JLabel();
     private JLabel titleText = new JLabel();
+    private JLabel phaseLabel = new JLabel();
 
     //creating all of the elements used for the music menu
     private JTextArea messagePlayerLabel = new JTextArea();
@@ -98,7 +97,7 @@ public class View {
             hitOceanIcon = new ImageIcon(ImageIO.read(hitOceanStream));
             battleshipsIcon = new ImageIcon(ImageIO.read(battleshipsStream));
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             sendPlayerMessage(new Font("Arial", Font.BOLD, 13), "A problem has occured while loading the images");
             e.printStackTrace();
             unexpectedErrorHasOccurred("A problem occurred while trying to load the images", "Error Loading Images");
@@ -142,8 +141,13 @@ public class View {
 
         //setting the score label which shows the score
         scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        scoreLabel.setText("            You : 0, Enemy : 0");
+        scoreLabel.setText("         You : 0, Enemy : 0");
         scoreLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+
+        //setting the phase label which shows in which phase the game is  
+        phaseLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        phaseLabel.setText("           Setup Phase");
+        phaseLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
 
         //setting the messagePlayerLabel which is used to send messages to the player
         messagePlayerLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
@@ -252,6 +256,7 @@ public class View {
 
         // setting up status panel
         statusPanel.add(playerIdLabel);
+        statusPanel.add(phaseLabel);
         statusPanel.add(scoreLabel);
         statusPanel.add(messagePlayerLabel);
         statusPanel.add(endGamePanel); 
@@ -307,6 +312,10 @@ public class View {
         for (int i = 0; i < menuItems.length; i++) {
             menuItems[i].addActionListener((java.awt.event.ActionListener) ActionListener);
         }
+    }
+
+    public void changePhase(String phase) {
+        phaseLabel.setText(phase);
     }
 
     /**

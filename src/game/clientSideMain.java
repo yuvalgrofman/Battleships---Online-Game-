@@ -1,5 +1,3 @@
-package game;
-
 import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
 
 public class clientSideMain {
@@ -13,8 +11,9 @@ public class clientSideMain {
             View.unexpectedErrorHasOccurred("An unexpected error has occurred while trying to load the look and feel", "Error While Loading Look And Feel");
         }        
 
+
         try {
-            Controller controller = new Controller(10,11000);
+            Controller controller = new Controller(10, IPPanel.getPortNumber(), IPPanel.getIP());
         } catch (Exception e) {
             View.unexpectedErrorHasOccurred("An Error has occurred while running the controller", "Error");
         }

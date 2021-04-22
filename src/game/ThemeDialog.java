@@ -1,5 +1,3 @@
-package game;
-
 import javax.swing.JOptionPane;
 import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.intellijthemes.*;

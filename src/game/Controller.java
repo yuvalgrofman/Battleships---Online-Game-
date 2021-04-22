@@ -1,5 +1,3 @@
-package game;
-
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +11,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 
@@ -23,7 +20,6 @@ public class Controller {
     private boolean setupFinished = false;
     private boolean gameFinished = false;
     private int rowsAndCols = 6;
-    private int portNumber; 
     private int playerId;
     
     
@@ -75,18 +71,22 @@ public class Controller {
     private int myWins = 0;
     private int enemyWins = 0;
 
+    private int portNumber;
+    private String ipAddress;
+
     /**
      * Constructor 
      * @param rowsAndCols represents the amount rows and cols each player should have 
      * @param portNumber the port number which will be used for the connection to the server 
      */
-    public Controller(int rowsAndCols, int portNumber) {
+    public Controller(int rowsAndCols, int portNumber, String ipAddress) {
         //checks that rows and cols is greater than 6
         if (rowsAndCols < 6) {
             System.out.println("parameter rowsAndCols must be equal or greater than 6");
             throw new IllegalArgumentException();
         }
 
+        this.ipAddress = ipAddress;
         this.portNumber = portNumber;        
         this.rowsAndCols = rowsAndCols;
 
@@ -486,6 +486,7 @@ public class Controller {
             makeButtonSound();
 
             if (e.getSource() == view.getFinishSetup()) {
+                view.changePhase("In-Game");
                 setupFinished = true;
                 view.getMyTabSideButtons().remove(view.getFinishSetup());
                 view.getMyTabSideButtons().remove(view.getRandomizeGrid());
@@ -579,6 +580,8 @@ public class Controller {
                     view.opponentDeclinedRematch();
                 }
 
+                view.changePhase("Setup Phase");
+
             } else if (gameFinished && e.getSource() == view.getNoButton()) {
 
                 view.getMyTabSideButtons().remove(view.getEndGamePanel());
@@ -622,6 +625,7 @@ public class Controller {
                                 clientSideConnection.sendCoords(j, i);
 
                                 if (clientSideConnection.sendDidIWin()) {
+                                    view.changePhase("Between Games");
                                     myWins++;
                                     view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
                                     view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Good Job!!! You Won!");;
@@ -637,6 +641,7 @@ public class Controller {
                                     enemyClickedOnMyBoard(enemyClickedLocation);
 
                                     if (didEnemyWin()) {
+                                        view.changePhase("Between Games");
                                         enemyWins++;
                                         view.getScoreLabel().setText("You : " + myWins + " ,Enemy : " + enemyWins);
                                         view.sendPlayerMessage(new Font("Arial", Font.BOLD, 20),"Nice Try, Maybe next time...");;
@@ -664,7 +669,7 @@ public class Controller {
         public ClientSideConnection() {
 
             try {
-                socket = new Socket("localHost", portNumber);
+                socket = new Socket(ipAddress, portNumber);
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 playerId = dataInputStream.readInt();
