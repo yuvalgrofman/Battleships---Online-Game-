@@ -13,7 +13,7 @@ public class clientSideMain {
 
 
         try {
-            Controller controller = new Controller(10, IPPanel.getPortNumber(), IPPanel.getIP());
+            Controller controller = new Controller(10, IPPanel.getIP(), IPPanel.getPortNumber() );
         } catch (Exception e) {
             View.unexpectedErrorHasOccurred("An Error has occurred while running the controller", "Error");
         }

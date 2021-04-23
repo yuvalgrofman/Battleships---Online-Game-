@@ -1,5 +1,6 @@
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
 import java.net.URL;
@@ -28,7 +29,7 @@ public class Controller {
 
     //the clips are used to make noise 
     //MusicClip is in charge of music 
-    //and soundEffectsClip is incharge of different sound effects
+    //and soundEffectsClip is responsible of different sound effects
     private Clip musicClip;
     private Clip soundEffectsClip;
 
@@ -79,7 +80,7 @@ public class Controller {
      * @param rowsAndCols represents the amount rows and cols each player should have 
      * @param portNumber the port number which will be used for the connection to the server 
      */
-    public Controller(int rowsAndCols, int portNumber, String ipAddress) {
+    public Controller(int rowsAndCols, String ipAddress, int portNumber) {
         //checks that rows and cols is greater than 6
         if (rowsAndCols < 6) {
             System.out.println("parameter rowsAndCols must be equal or greater than 6");
@@ -669,7 +670,7 @@ public class Controller {
         public ClientSideConnection() {
 
             try {
-                socket = new Socket(ipAddress, portNumber);
+                socket = new Socket(InetAddress.getByName(ipAddress), portNumber);
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 playerId = dataInputStream.readInt();

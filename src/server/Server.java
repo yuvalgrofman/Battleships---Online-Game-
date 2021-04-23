@@ -42,12 +42,15 @@ public class Server {
 
     public Server(int portNumber) {
         this.portNumber = portNumber;
-
         System.out.println("-----Server-------");
         try {
-            serverSocket = new ServerSocket(portNumber);
+            serverSocket = new ServerSocket(portNumber, 50, InetAddress.getByName("0.0.0.0"));
+            // serverSocket = new ServerSocket(portNumber);
+            // serverSocket.bind(new InetSocketAddress("0.0.0.0",portNumber));
+            System.out.println(InetAddress.getByName("0.0.0.0"));
+            System.out.println("Server Socket Created at: " + serverSocket.getInetAddress().getLocalHost());
         } catch (IOException ex) {
-            System.out.println("IOException from Sever Constructor");
+            System.out.println("IOException from Server Constructor");
             System.out.println(ex.getLocalizedMessage());
             System.out.println(ex.getStackTrace());
             closeServer();
@@ -66,6 +69,7 @@ public class Server {
 
             while (playersConnected < 2) {
                 Socket socket = serverSocket.accept();
+                System.out.println(socket.getInetAddress().getHostAddress());
                 playersConnected++;
                 System.out.println("Player #" + playersConnected + " has connected.");
                 ServerSideConnection ssc = new ServerSideConnection(socket, playersConnected);
