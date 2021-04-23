@@ -62,7 +62,8 @@ public class Controller {
 
     private int lastButtonPressX;
     private int lastButtonPressY;
-    private boolean buttonPressed = false;
+    private boolean buttonPressed = false;//Important for setup phase, checks if any button was already pressed beforehand
+    //if so then it moves a ship from button pressed to the new button that was just pressed
     private int[][] lastShipPressed;
     private boolean yourTurn;
     private boolean randomizeSetupTriggered = false;
@@ -475,24 +476,31 @@ public class Controller {
                     view.getPauseButton().setEnabled(true);
                     view.getVolumeSlider().setEnabled(true);
                 }
-            } 
+            }
         }
 
     }
-
+    
+    /**
+     * The class responsible for all buttons pressed on the users board panel 
+     */
     class myBoardButtonClickListener implements ActionListener {
 
+        /**
+         * The class which runs when a button with the respective Action Listener is pressed
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             makeButtonSound();
 
             if (e.getSource() == view.getFinishSetup()) {
+
                 view.changePhase("In-Game");
                 setupFinished = true;
                 view.getMyTabSideButtons().remove(view.getFinishSetup());
                 view.getMyTabSideButtons().remove(view.getRandomizeGrid());
 
-                if (playerId == 1) {
+                if (playerId == 1) {//Player One is always first
                     yourTurn = true;
                 } else {
                     yourTurn = false;
@@ -523,7 +531,8 @@ public class Controller {
                 for (int i = 0; i < rowsAndCols; i++) {
                     for (int j = 0; j < rowsAndCols; j++) {
                         if (e.getSource() == view.getMyButton(i, j)) {
-                            if (buttonPressed) {
+                            if (buttonPressed) {//checks if any button was already pressed beforehand
+                                                //if so then it moves a ship from button pressed to the new button that was just pressed
                                 moveShip(lastShipPressed, lastButtonPressX, lastButtonPressY, j, i);
                                 buttonPressed = false;
 
@@ -539,7 +548,7 @@ public class Controller {
                         }
                     }
                 }
-            } else if (gameFinished && e.getSource() == view.getYesButton()) {
+            } else if (gameFinished && e.getSource() == view.getYesButton()) {//Note: this button can only be pressed if the game is over 
 
                 view.getEndGamePanel().setVisible(false);
 
@@ -562,7 +571,7 @@ public class Controller {
                 view.getMyTabSideButtons().add(view.getFinishSetup(), 0);
                 view.getMyTabSideButtons().add(view.getRandomizeGrid(), 1);
 
-                boolean enemyWantsToPlay = false; 
+                boolean enemyWantsToPlay = false;
                 try {
 
                     clientSideConnection.dataOutputStream.writeBoolean(true);
@@ -583,7 +592,7 @@ public class Controller {
 
                 view.changePhase("Setup Phase");
 
-            } else if (gameFinished && e.getSource() == view.getNoButton()) {
+            } else if (gameFinished && e.getSource() == view.getNoButton()) {//Note: this button can only be pressed if the game is over
 
                 view.getMyTabSideButtons().remove(view.getEndGamePanel());
                 view.sendPlayerMessage(new Font("Arial", Font.BOLD, 13), "Thanks For Playing");
@@ -604,6 +613,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Responsible for all buttons pressed on enemy panel
+     */
     class enemyBoardButtonClickListener implements ActionListener {
 
         @Override
@@ -661,12 +673,18 @@ public class Controller {
             }        }
     }
 
+    /**
+     * This class is responsible for making the connection to the user
+     */
     private class ClientSideConnection {
 
         private Socket socket = new Socket();
         private DataInputStream dataInputStream;
         private DataOutputStream dataOutputStream;
 
+        /**
+         * Constructor creates all the stuff needed to connect and communicate with the server and sends the number of rowsAndCols
+         */
         public ClientSideConnection() {
 
             try {
@@ -685,6 +703,11 @@ public class Controller {
             }
         }
 
+        /**
+         * 
+         * @param array a 2d array 
+         * sends the 2d array to the server
+         */
         public void write2DArray(int[][] array) {
 
             try {
@@ -704,6 +727,12 @@ public class Controller {
             }
         }
 
+        /**
+         *  
+         * @param xLength The number or Columns in the array 
+         * @param yLength num of rows in the array 
+         * @return a 2d array which represents thq opponents board 
+         */
         public int[][] receiveOpponentBoard(int xLength, int yLength) {
 
             int[][] array = new int[yLength][xLength];
@@ -727,6 +756,11 @@ public class Controller {
 
         }
 
+        /**
+         * send Coordinates 
+         * @param x int which represents the x coordinate
+         * @param y int which represents the y coordinate 
+         */
         public void sendCoords(int x, int y) {
 
             try {
@@ -741,6 +775,10 @@ public class Controller {
             }
         }
 
+        /**
+         * receives a int array which represents Coords
+         * @return and returns it 
+         */
         public int[] receiveCoords() {
             int[] coords = { -1, -1 };
 
@@ -757,6 +795,10 @@ public class Controller {
             return coords;
         }
 
+        /**
+         * Sends a boolean represents whether the client won 
+         * @return and returns it 
+         */
         public boolean sendDidIWin() {
             try {
                 dataOutputStream.writeBoolean(didIWin());

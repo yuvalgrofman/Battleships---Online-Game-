@@ -40,6 +40,11 @@ public class Server {
     private boolean playerOnePlayingValid = false;
     private boolean playerTwoPlayingValid = false;
 
+    /**
+     * 
+     * @param portNumber the portNumber of the serverSocket
+     * Initializes the ServerSocket and gets it ready to accept connection 
+     */
     public Server(int portNumber) {
         this.portNumber = portNumber;
         System.out.println("-----Server-------");
@@ -59,10 +64,16 @@ public class Server {
 
     }
 
+    /**
+     * Closes the server
+     */
     public void closeServer() {
         System.exit(0);
     }
 
+    /**
+     * Makes the serverSocket accept up to two sockets and then stops accepting connections 
+     */
     public void acceptConnections() {
         try {
             System.out.println("Accepting connections");
@@ -81,7 +92,7 @@ public class Server {
                 }
 
                 Thread runThread = new Thread(ssc);
-                runThread.start();
+                runThread.start();//run() is called HERE
 
             }
 
@@ -92,19 +103,24 @@ public class Server {
             closeServer();
         }
     }
+    
+    //Not used in code so I commented out 
+    //----------------------------------------------------------------
+    // public boolean isValidBoard(int[][] board) {
+    //     for (int i = 0; i < board.length; i++) {
+    //         for (int j = 0; j < board[0].length; j++) {
+    //             if (board[i][j] != 0) {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+    //----------------------------------------------------------------
 
-    public boolean isValidBoard(int[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j] != 0) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     * Class responsible for the connections to each client 
+     */
     private class ServerSideConnection implements Runnable {
 
         private Socket socket;
@@ -114,6 +130,11 @@ public class Server {
         private boolean receivedBoard;
         private boolean clientPlaying = true;
 
+        /**
+         * 
+         * @param socket a socket which is used to communicate with the client 
+         * @param playerId The Id of the player the instance of this class is connected to
+         */
         public ServerSideConnection(Socket socket, int playerId) {
             this.socket = socket;
             this.playerId = playerId;
@@ -130,13 +151,18 @@ public class Server {
             }
         }
 
+        /**
+         * A method which creates a new thread which is used to run code 
+         * triggered on line 95 
+         */
         public void run() {
             try {
+
                 dataOutputStream.writeInt(playerId);
 
                 rowsAndCols = dataInputStream.readInt();
                 while (clientPlaying) {
-                        
+
                     if (playerId == 1) {
 
                         playerOneBoard = read2DArray();
@@ -171,8 +197,8 @@ public class Server {
                     isPlayerOneTurn = true;
                     playerOnePlayingValid = false;
                     playerTwoPlayingValid = false;
-                    player1CoordsValid = false;                    
-                    player2CoordsValid = false;                    
+                    player1CoordsValid = false;
+                    player2CoordsValid = false;
 
                     dataOutputStream.flush();
 
@@ -186,16 +212,21 @@ public class Server {
 
                     boolean sentCoords = false;
 
-                    while (!aPlayerWon) {
-
-                        if (playerId == 1 && isPlayerOneTurn) {// playerOne in his turn
+                    while (!aPlayerWon) {   //While no player won their are four states 
+                                            //Case 1. you are p1 and its your turn -> wait for client p1 for input and store it  
+                                            //Case 2. you are p1 and its not your turn -> wait for p2 to end turn and then send to p1 coords of where p2 clicked 
+                                            //Case 3. you are p2 and its your turn -> wait for client p2 for input and store it 
+                                            //Case 4. you are p2 and its not your turn -> wait for p1 to end turn and then send to p1 coords of where p1 clicked
+                                            
+                        //Case 1
+                        if (playerId == 1 && isPlayerOneTurn) {
                             player1Coords = receiveCoords();
 
                             if (player1Coords[0] == -1 && player1Coords[1] == -1) {
                                 throw new IOException();
                             }
 
-                            if (didClientWin()){
+                            if (didClientWin()) {
                                 System.out.println("Player # " + playerId + " Won");
                                 playerOneWon = true;
                                 aPlayerWon = true;
@@ -206,6 +237,7 @@ public class Server {
                             isPlayerOneTurn = false;
                             sentCoords = false;
 
+                        //Case 2
                         } else if (playerId == 1 && !isPlayerOneTurn && !sentCoords) {// playerOne in his opponents turn
 
                             while (!player2CoordsValid) {
@@ -220,6 +252,7 @@ public class Server {
 
                             sentCoords = true;
 
+                        //Case 3
                         } else if (playerId == 2 && !isPlayerOneTurn) {// playerTwo in his turn
 
                             player2Coords = receiveCoords();
@@ -228,9 +261,9 @@ public class Server {
                                 throw new IOException();
                             }
 
-                            if (didClientWin()){
+                            if (didClientWin()) {
                                 System.out.println("Player # " + playerId + " Won");
-                                playerTwoWon = true; 
+                                playerTwoWon = true;
                                 aPlayerWon = true;
                             }
 
@@ -239,6 +272,7 @@ public class Server {
                             isPlayerOneTurn = true;
                             sentCoords = false;
 
+                        //Case 4
                         } else if (playerId == 2 && isPlayerOneTurn && !sentCoords) {// playerTwo in his opponents turn
 
                             while (!player1CoordsValid) {
@@ -264,7 +298,7 @@ public class Server {
                         while (!playerTwoPlayingValid) {
                             Thread.sleep(10);
                         }
-                        
+
                     } else {
                         playerTwoPlaying = clientPlaying;
                         playerTwoPlayingValid = true;
@@ -277,7 +311,7 @@ public class Server {
 
                     clientPlaying = playerOnePlaying && playerTwoPlaying;
                     dataOutputStream.writeBoolean(clientPlaying);
-                
+
                     receivedPlayer1Board = false;
                     receivedPlayer2Board = false;
                     aPlayerWon = false;
@@ -293,7 +327,12 @@ public class Server {
                 System.out.println(ex.getStackTrace());
             }
         }
-
+        
+        /**
+         * 
+         * @param array a 2d array 
+         * this function sends a 2d array to the client 
+         */
         public void write2DArray(int[][] array) {
 
             try {
@@ -310,6 +349,10 @@ public class Server {
             }
         }
 
+        /**
+         * reads a 2d array from the client 
+         * @return and returns it 
+         */
         public int[][] read2DArray() {
             try {
 
@@ -337,6 +380,10 @@ public class Server {
 
         }
 
+        /**
+         * receives an array of length 2 which represents coords
+         * @return and returns it
+         */
         public int[] receiveCoords() {
 
             int[] coords = { -1, -1 };
@@ -356,6 +403,12 @@ public class Server {
             return coords;
         }
 
+        /**
+         * 
+         * @param coords an int of length two which represents coords
+         * this function sends those coords to the client  
+         * @return if the coords were successfully sent
+         */
         public boolean writeCoords(int[] coords) {
 
             try {
@@ -372,6 +425,10 @@ public class Server {
             return true;
         }
 
+        /**
+         * receives 
+         * @return and returns a boolean which represents if the client won
+         */
         public boolean didClientWin() {
 
             try {

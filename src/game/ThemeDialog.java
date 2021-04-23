@@ -5,8 +5,13 @@ import com.formdev.flatlaf.intellijthemes.*;
 
 public class ThemeDialog {
 
+    //The themes that can be picked from 
     public static final String[] themes = { "Flat Light", "Flat Dark", "Darcula", "Cobalt2", "Gruvbox Dark Medium" };
-    
+
+    /**
+     * Creates a inputDialog which return a theme.
+     * Then based on that theme sets the look&feel of the Gui.
+     */
     public static void showPopUpGuiForTheme() {
 
         String themePicked = (String) JOptionPane.showInputDialog(null, 
